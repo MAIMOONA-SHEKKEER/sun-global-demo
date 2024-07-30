@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://api.example.com',
+  baseURL: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
   headers: {
     'Content-Type': 'application/json',
   },

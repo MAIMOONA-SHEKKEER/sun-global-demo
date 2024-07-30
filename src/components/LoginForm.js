@@ -1,19 +1,12 @@
 import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Container,
-  Link,
-  styled,
-  Grid,
-  Avatar,
-  CssBaseline,
-} from "@mui/material";
+import { Box, Link, Grid, Avatar } from "@mui/material";
 import axios from "axios";
-import { FormTextField, FormWrapper } from "../styles/styledComponents";
-import { Google as GoogleIcon } from "@mui/icons-material";
+import {
+  CustomizedText,
+  CustomTextField,
+  StyledGrid,
+  SubmitButton,
+} from "../styles/StyledComponents";
 import Banner from "./Banner";
 
 const LoginForm = () => {
@@ -38,44 +31,27 @@ const LoginForm = () => {
 
   return (
     <Grid container sx={{ height: "100vh" }}>
-      <Grid
-        item
-        xs={12}
-        md={6}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: 2,
-          gap: 2,
-        }}
-      >
+      <StyledGrid item xs={12} md={6}>
         <Avatar sx={{ m: 1, bgcolor: "secondary.main" }} />
-        <Typography component="h1" variant="h5">
-          Welcome back!
-        </Typography>
-        <Box component="form" noValidate sx={{ mt: 4 }} onSubmit={handleSubmit}>
-          <TextField
-            margin="normal"
+        <CustomizedText>Welcome back!</CustomizedText>
+        <Box component="form" sx={{ mt: 4 }} onSubmit={handleSubmit}>
+          <CustomTextField
+            placeholder="Enter your email address"
             required
-            fullWidth
             id="email"
             label="Email Address"
+            type="email"
             name="email"
-            autoComplete="email"
-            autoFocus
             value={credentials.email}
             onChange={handleChange}
           />
-          <TextField
-            margin="normal"
+          <CustomTextField
             required
-            fullWidth
+            placeholder="Enter your current password"
             name="password"
             label="Password"
             type="password"
             id="password"
-            autoComplete="current-password"
             value={credentials.password}
             onChange={handleChange}
           />
@@ -84,14 +60,7 @@ const LoginForm = () => {
               Forgot your password?
             </Link>
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 5, mb: 4 }}
-          >
-            Log In
-          </Button>
+          <SubmitButton text='Login' />
           <Grid container>
             <Grid item>
               <Link href="/register" variant="body2">
@@ -100,7 +69,7 @@ const LoginForm = () => {
             </Grid>
           </Grid>
         </Box>
-      </Grid>
+      </StyledGrid>
       <Banner />
     </Grid>
   );
