@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Grid } from "@mui/material";
 import axios from "axios";
 import {
-  CustomizedText,
+  CustomHeader,
   CustomTextField,
   StyledGrid,
   SubmitButton,
@@ -25,21 +25,21 @@ const ResetPasswordForm = () => {
   return (
     <Grid container sx={{ height: "100vh" }}>
       <StyledGrid item xs={12} md={6}>
-        <CustomizedText>Reset Password</CustomizedText>
-        <Box component="form" p={2} width={600} onSubmit={handleSubmit}>
+        <CustomHeader>Reset Password</CustomHeader>
+        <Box component="form" p={2} width={360} onSubmit={handleSubmit}>
           <CustomTextField
+            fullWidth
             required
             id="email"
             label="Email Address"
-            type="text"
+            type="email"
             placeholder="Enter your Email Address"
             name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-           <SubmitButton text='Reset'/>
+          <SubmitButton text="Reset" fullWidth />
         </Box>
-
       </StyledGrid>
       <Banner />
     </Grid>

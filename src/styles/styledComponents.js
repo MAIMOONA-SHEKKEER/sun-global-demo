@@ -2,24 +2,29 @@ import React from "react";
 import {
   Box,
   Button,
+  Card,
   Grid,
   InputAdornment,
+  Link,
   styled,
   TextField,
   Typography,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import Lock from "@mui/icons-material/Lock";
-import { Phone } from "@mui/icons-material";
+import {
+  Phone,
+  Email,
+  Lock,
+  VisibilityOff,
+  Visibility,
+  AccountCircle,
+} from "@mui/icons-material";
 
 const RedAsterisk = styled("span")(() => ({
   color: "red",
 }));
 
-export const CustomizedText = styled((props) => {
+export const CustomHeader = styled((props) => {
   const { fontSize, fontColor, font, ...other } = props;
   return <Typography mt={5} {...other} />;
 })(({ theme, fontSize = 25, fontColor, font }) => ({
@@ -41,7 +46,13 @@ export const CustomizedText = styled((props) => {
   },
 }));
 
-export const CustomTextField = ({ type, label, required, ...props }) => {
+export const CustomTextField = ({
+  type,
+  label,
+  required,
+  fullWidth,
+  ...props
+}) => {
   const getAdornment = () => {
     switch (type) {
       case "password":
@@ -65,7 +76,7 @@ export const CustomTextField = ({ type, label, required, ...props }) => {
       case "email":
         return (
           <InputAdornment position="start">
-            <Lock />
+            <Email />
           </InputAdornment>
         );
       case "number":
@@ -75,7 +86,11 @@ export const CustomTextField = ({ type, label, required, ...props }) => {
           </InputAdornment>
         );
       default:
-        return null;
+        return (
+          <InputAdornment position="start">
+            <Lock />
+          </InputAdornment>
+        );
     }
   };
 
@@ -83,8 +98,9 @@ export const CustomTextField = ({ type, label, required, ...props }) => {
     <TextField
       {...props}
       type={type}
-      fullWidth
       autoFocus
+      fullWidth={fullWidth}
+      margin="normal"
       label={
         required ? (
           <>
@@ -97,7 +113,7 @@ export const CustomTextField = ({ type, label, required, ...props }) => {
       InputProps={{
         endAdornment: getAdornment(),
       }}
-      sx={{ mb: 5 }}
+      sx={{ m: 1 }}
     />
   );
 };
@@ -115,12 +131,74 @@ export const StyledGrid = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  padding: theme.spacing(2),
-  gap: theme.spacing(2),
+  justifyContent: "center",
 }));
 
-export const SubmitButton = ({ text }) => (
-  <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 4 }}>
-    {text}
-  </Button>
-);
+export const StyledCardContent = styled(Card)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(5),
+}));
+
+export const SubmitButton = ({
+  text,
+  color,
+  disabled,
+  fullWidth,
+  width,
+  onClick,
+  ...otherProps
+}) => {
+  const StyledButton = styled(Button)(({ theme }) => ({
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+  }));
+
+  return (
+    <StyledButton
+      sx={{ width: width }}
+      fullWidth={fullWidth}
+      variant="contained"
+      color={color || "primary"}
+      disabled={disabled}
+      onClick={onClick}
+      type="submit"
+      {...otherProps}
+    >
+      {text}
+    </StyledButton>
+  );
+};
+
+export const CustomText = styled((props) => {
+  const { fontSize, fontColor, font, ...other } = props;
+  return <Typography m={2} {...other} />;
+})(({ theme, fontSize = 18, fontColor, font }) => ({
+  color: fontColor ?? theme.palette.primary.main,
+  fontFamily: font ?? theme,
+  fontSize: fontSize,
+  wordWrap: "break-word",
+  textAlign: "center",
+  [theme.breakpoints.down("xl")]: {
+    fontSize: fontSize - 2,
+  },
+  [theme.breakpoints.down("lg")]: {
+    fontSize: fontSize - 4,
+  },
+  [theme.breakpoints.down("md")]: {
+    fontSize: fontSize - 6,
+  },
+  [theme.breakpoints.down("sm")]: {
+    fontSize: fontSize - 8,
+  },
+}));
+
+export const StyledLink = styled(Link)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  cursor: "pointer",
+}));

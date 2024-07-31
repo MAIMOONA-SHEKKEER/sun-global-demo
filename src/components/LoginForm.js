@@ -1,76 +1,126 @@
 import React, { useState } from "react";
-import { Box, Link, Grid, Avatar } from "@mui/material";
-import axios from "axios";
+import { Grid, Avatar, Snackbar, Alert, Box } from "@mui/material";
+import { sendOtp, loginUser } from "../api/apiService";
 import {
-  CustomizedText,
-  CustomTextField,
+  CustomHeader,
+  CustomText,
   StyledGrid,
-  SubmitButton,
+  StyledLink,
 } from "../styles/StyledComponents";
 import Banner from "./Banner";
+import EmailPasswordLogin from "./EmailPasswordLogin";
+import EmailOtpLogin from "./EmailOtpLogin";
 
 const LoginForm = () => {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
+    otp: "",
   });
+  const [loginMethod, setLoginMethod] = useState("email-password");
+  const [otpSent, setOtpSent] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  const handleChange = (event) => {
+    setCredentials({ ...credentials, [event.target.name]: event.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleOtpChange = (otp) => {
+    setCredentials({ ...credentials, otp });
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleSendOtp = async () => {
     try {
-      const response = await axios.post("/api/login", credentials);
-      console.log(response.data);
+      await sendOtp(credentials.email);
+      setSnackbarMessage("OTP sent to your email!");
+      setSnackbarSeverity("success");
+      setOtpSent(true);
     } catch (error) {
-      console.error(error);
+      console.error("Error sending OTP:", error);
+      setSnackbarMessage("Failed to send OTP.");
+      setSnackbarSeverity("error");
+    } finally {
+      setSnackbarOpen(true);
     }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await loginUser(loginMethod, credentials);
+    console.log("Login Response:", response); 
+    setSnackbarSeverity("success");
+
+  } catch (error) {
+    console.error("Login error:", error);
+    setSnackbarMessage("Login failed");
+    setSnackbarSeverity("error");
+  } finally {
+    setSnackbarOpen(true);
+  }
+  };
+
+  const toggleLoginMethod = () => {
+    setLoginMethod((prevMethod) =>
+      prevMethod === "email-password" ? "email-otp" : "email-password"
+    );
+    setOtpSent(false);
   };
 
   return (
     <Grid container sx={{ height: "100vh" }}>
-      <StyledGrid item xs={12} md={6}>
-        <Avatar sx={{ m: 1, bgcolor: "secondary.main" }} />
-        <CustomizedText>Welcome back!</CustomizedText>
-        <Box component="form" sx={{ mt: 4 }} onSubmit={handleSubmit}>
-          <CustomTextField
-            placeholder="Enter your email address"
-            required
-            id="email"
-            label="Email Address"
-            type="email"
-            name="email"
-            value={credentials.email}
-            onChange={handleChange}
-          />
-          <CustomTextField
-            required
-            placeholder="Enter your current password"
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            value={credentials.password}
-            onChange={handleChange}
-          />
-          <Grid item xs>
-            <Link href="/reset-password" variant="body2">
-              Forgot your password?
-            </Link>
-          </Grid>
-          <SubmitButton text='Login' />
-          <Grid container>
-            <Grid item>
-              <Link href="/register" variant="body2">
-                Don't have an account? Register here
-              </Link>
-            </Grid>
-          </Grid>
+      <StyledGrid container item xs={12} md={6}>
+        <Avatar sx={{ m: 1 }} />
+        <CustomHeader>Welcome Back!</CustomHeader>
+        <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 360 }}>
+          {loginMethod === "email-password" ? (
+            <EmailPasswordLogin
+              credentials={credentials}
+              handleChange={handleChange}
+              toggleLoginMethod={toggleLoginMethod}
+            />
+          ) : (
+            <EmailOtpLogin
+              credentials={credentials}
+              handleOtpChange={handleOtpChange}
+              handleSendOtp={handleSendOtp}
+              handleChange={handleChange}
+              otpSent={otpSent}
+              toggleLoginMethod={toggleLoginMethod}
+            />
+          )}
+          <CustomText>OR</CustomText>
+          <StyledLink
+            href="/register"
+            variant="body2"
+            sx={{ textAlign: "center" }}
+          >
+            Don't have an account? Register here
+          </StyledLink>
         </Box>
       </StyledGrid>
       <Banner />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };
