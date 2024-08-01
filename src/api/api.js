@@ -1,1 +1,1 @@
-export const baseUrl='https://cfmpcolk2k.execute-api.af-south-1.amazonaws.com/dev/user-management-service/v1';
+export const baseUrl = '/api/dev/user-management-service/v1';

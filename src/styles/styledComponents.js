@@ -1,11 +1,13 @@
 import React from "react";
 import {
+  Alert,
   Box,
   Button,
   Card,
   Grid,
   InputAdornment,
   Link,
+  Snackbar,
   styled,
   TextField,
   Typography,
@@ -20,18 +22,16 @@ import {
   AccountCircle,
 } from "@mui/icons-material";
 
-const RedAsterisk = styled("span")(() => ({
+const RedAsterisk = styled("span")({
   color: "red",
-}));
+});
 
-export const CustomHeader = styled((props) => {
-  const { fontSize, fontColor, font, ...other } = props;
-  return <Typography mt={5} {...other} />;
-})(({ theme, fontSize = 25, fontColor, font }) => ({
+const CustomHeader = styled(Typography)(({ theme, fontSize = 25, fontColor, font }) => ({
   color: fontColor ?? theme.palette.primary.main,
-  fontFamily: font ?? theme,
+  fontFamily: "initial",
   fontSize: fontSize,
   wordWrap: "break-word",
+  textAlign: "start",
   [theme.breakpoints.down("xl")]: {
     fontSize: fontSize - 2,
   },
@@ -46,11 +46,13 @@ export const CustomHeader = styled((props) => {
   },
 }));
 
-export const CustomTextField = ({
+const CustomTextField = ({
   type,
   label,
   required,
   fullWidth,
+  onClick,
+  showPassword,
   ...props
 }) => {
   const getAdornment = () => {
@@ -60,10 +62,10 @@ export const CustomTextField = ({
           <InputAdornment position="end">
             <IconButton
               aria-label="toggle password visibility"
-              onClick={props.onClick}
+              onClick={onClick}
               edge="end"
             >
-              {props.showPassword ? <VisibilityOff /> : <Visibility />}
+              {showPassword ? <VisibilityOff /> : <Visibility />}
             </IconButton>
           </InputAdornment>
         );
@@ -118,23 +120,15 @@ export const CustomTextField = ({
   );
 };
 
-export const FormWrapper = styled(Box)(({ theme }) => ({
+const StyledGrid = styled(Grid)({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  marginTop: theme.spacing(8),
-  gap: theme.spacing(2),
-}));
+  textAlign: "start",
+});
 
-export const StyledGrid = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-export const StyledCardContent = styled(Card)(({ theme }) => ({
+const StyledCardContent = styled(Card)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -142,9 +136,9 @@ export const StyledCardContent = styled(Card)(({ theme }) => ({
   padding: theme.spacing(5),
 }));
 
-export const SubmitButton = ({
+const SubmitButton = ({
   text,
-  color,
+  color = "primary",
   disabled,
   fullWidth,
   width,
@@ -162,7 +156,7 @@ export const SubmitButton = ({
       sx={{ width: width }}
       fullWidth={fullWidth}
       variant="contained"
-      color={color || "primary"}
+      color={color}
       disabled={disabled}
       onClick={onClick}
       type="submit"
@@ -173,15 +167,13 @@ export const SubmitButton = ({
   );
 };
 
-export const CustomText = styled((props) => {
-  const { fontSize, fontColor, font, ...other } = props;
-  return <Typography m={2} {...other} />;
-})(({ theme, fontSize = 18, fontColor, font }) => ({
+const CustomText = styled(Typography)(({ theme, fontSize = 18, fontColor, font }) => ({
   color: fontColor ?? theme.palette.primary.main,
-  fontFamily: font ?? theme,
+  fontFamily: "initial",
   fontSize: fontSize,
   wordWrap: "break-word",
-  textAlign: "center",
+  textAlign: "start",
+  marginLeft: 10,
   [theme.breakpoints.down("xl")]: {
     fontSize: fontSize - 2,
   },
@@ -196,9 +188,48 @@ export const CustomText = styled((props) => {
   },
 }));
 
-export const StyledLink = styled(Link)(({ theme }) => ({
+const StyledLink = styled(Link)({
   display: "flex",
   flexDirection: "column",
-  alignItems: "center",
+  alignItems: "start",
   cursor: "pointer",
-}));
+  fontFamily: "initial",
+  textDecoration: "none",
+  marginTop: 5,
+  marginLeft: 10,
+});
+
+const CustomSnackbar = ({ open, message, severity, onClose }) => (
+  <Snackbar
+    open={open}
+    autoHideDuration={6000}
+    onClose={onClose}
+    anchorOrigin={{ vertical: "top", horizontal: "right" }}
+  >
+    <Alert onClose={onClose} severity={severity} sx={{ width: "100%" }}>
+      {message}
+    </Alert>
+  </Snackbar>
+);
+
+const StyledWrapper = styled(Box)({
+  padding: 20,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  minHeight: "100vh",
+  backgroundColor: "#f5f5f5",
+});
+
+export {
+  RedAsterisk,
+  CustomHeader,
+  CustomTextField,
+  StyledGrid,
+  StyledCardContent,
+  SubmitButton,
+  CustomText,
+  StyledLink,
+  CustomSnackbar,
+  StyledWrapper,
+};

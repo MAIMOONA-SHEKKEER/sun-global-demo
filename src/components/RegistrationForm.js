@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Box,
   Grid,
@@ -8,156 +8,116 @@ import {
   Select,
   InputLabel,
   FormControl,
+  FormHelperText,
 } from "@mui/material";
-import { registerUser } from "../api/apiService";
-import {
-  CustomHeader,
-  CustomTextField,
-  StyledGrid,
-  StyledLink,
-  SubmitButton,
-} from "../styles/StyledComponents";
+import useRegistrationForm from "../hooks/useRegistrationForm";
+import { CustomHeader, CustomTextField, StyledGrid, StyledLink, SubmitButton } from "../styles/StyledComponents";
 import Banner from "./Banner";
 import { userRoles } from "../constants/user";
 
+const initialFormState = {
+  fullName: "",
+  lastname: "",
+  mobileNumber: "",
+  passportNumber: "",
+  password: "",
+  userRole: "",
+  username: "",
+  idNumber: "",
+};
+
 const RegistrationForm = () => {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    lastName: "",
-    mobileNumber: "",
-    passportNumber: "",
-    password: "",
-    userRole: "",
-    username: "",
-    idNumber: "",
-  });
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
-
-  const handleRoleChange = (e) => {
-    setFormData((prevState) => ({ ...prevState, userRole: e.target.value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const result = await registerUser(formData);
-      setSnackbarMessage('Registration successful!');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-      console.log('response', result);
-    } catch (error) {
-      console.error('Error during registration:', error);
-
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-        setSnackbarMessage(error.response.data.message || 'Registration failed.');
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-        setSnackbarMessage('No response received from the server.');
-      } else {
-        console.error('Error message:', error.message);
-        setSnackbarMessage('An unexpected error occurred.');
-      }
-
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    }
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
+  const {
+    formData,
+    errors,
+    snackbar,
+    handleChange,
+    handleSubmit,
+    handleSnackbarClose,
+  } = useRegistrationForm(initialFormState);
 
   return (
     <Grid container sx={{ height: "100vh" }}>
       <StyledGrid item xs={12} md={6}>
         <CustomHeader>Registration Form</CustomHeader>
-        <Box component="form" p={5} width={550} onSubmit={handleSubmit}>
+        <Box component="form" p={5} maxWidth={550} onSubmit={handleSubmit}>
           <CustomTextField
-            required
             id="fullName"
             label="Full Name"
-            type="text"
-            placeholder="Enter your full name"
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
+            error={errors.fullName}
+            helperText={errors.fullName}
           />
           <CustomTextField
-            required
-            id="lastName"
+            id="lastname"
             label="Last Name"
-            type="text"
-            placeholder="Enter your last name"
-            name="lastName"
-            value={formData.lastName}
+            name="lastname"
+            value={formData.lastname}
             onChange={handleChange}
+            error={errors.lastname}
+            helperText={errors.lastname}
           />
           <CustomTextField
-            required
             id="mobileNumber"
             label="Mobile Number"
             type="number"
-            placeholder="Enter your mobile number"
             name="mobileNumber"
             value={formData.mobileNumber}
             onChange={handleChange}
+            error={errors.mobileNumber}
+            helperText={errors.mobileNumber}
           />
           <CustomTextField
-            required
             id="passportNumber"
             label="Passport Number"
-            placeholder="Enter your passport number"
             name="passportNumber"
             value={formData.passportNumber}
             onChange={handleChange}
+            error={errors.passportNumber}
+            helperText={errors.passportNumber}
           />
           <CustomTextField
-            required
             id="password"
             label="Password"
             type="password"
-            placeholder="Enter your password"
             name="password"
             value={formData.password}
             onChange={handleChange}
+            error={errors.password}
+            helperText={errors.password}
           />
           <CustomTextField
-            required
             id="username"
             label="Email Address"
             type="email"
-            placeholder="Enter your email address"
             name="username"
             value={formData.username}
             onChange={handleChange}
+            error={errors.username}
+            helperText={errors.username}
           />
           <CustomTextField
-            required
             id="idNumber"
             label="ID Number"
-            placeholder="Enter your ID number"
             name="idNumber"
             value={formData.idNumber}
             onChange={handleChange}
+            error={errors.idNumber}
+            helperText={errors.idNumber}
           />
-          <FormControl sx={{ width: 275 }}>
+          <FormControl sx={{ width: 275 }} error={!!errors.userRole}>
             <InputLabel id="userRole-label">User Role</InputLabel>
             <Select
               labelId="userRole-label"
               id="userRole"
               name="userRole"
               value={formData.userRole}
-              onChange={handleRoleChange}
+              onChange={handleChange}
               label="User Role"
               sx={{ m: 1 }}
+              required
             >
               {userRoles.map((role) => (
                 <MenuItem key={role.value} value={role.value}>
@@ -165,26 +125,21 @@ const RegistrationForm = () => {
                 </MenuItem>
               ))}
             </Select>
+            {!!errors.userRole && <FormHelperText>{errors.userRole}</FormHelperText>}
           </FormControl>
           <SubmitButton text="Register" width={520} />
-          <StyledLink href="/login" variant="body2">
-            Already have an account? Login here
-          </StyledLink>
+          <StyledLink href="/login">Already have an account? Login here</StyledLink>
         </Box>
       </StyledGrid>
       <Banner />
       <Snackbar
-        open={snackbarOpen}
+        open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
+          {snackbar.message}
         </Alert>
       </Snackbar>
     </Grid>
