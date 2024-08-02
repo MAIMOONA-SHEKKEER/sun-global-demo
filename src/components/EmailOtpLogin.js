@@ -1,13 +1,7 @@
 import React from "react";
-import { Button, Card, CircularProgress, Box } from "@mui/material";
-import OtpInput from "react18-input-otp";
-import {
-  CustomText,
-  CustomTextField,
-  StyledCardContent,
-  StyledLink,
-  SubmitButton,
-} from "../styles/StyledComponents";
+import { Button, Box } from "@mui/material";
+import { CustomTextField, StyledLink } from "../styles/StyledComponents";
+import { OtpForm } from "./OtpForm";
 
 const EmailOtpLogin = ({
   credentials,
@@ -18,10 +12,34 @@ const EmailOtpLogin = ({
   otpError,
   loading,
   otpSent,
+  errors,
   toggleLoginMethod,
+  setErrors,
 }) => {
+  
+  const validateEmail = () => {
+    let valid = true;
+    let newErrors = {};
+
+    if (!credentials.email) {
+      valid = false;
+      newErrors.email = "Email is required.";
+    } else {
+      newErrors.email = "";
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleSendOtpClick = () => {
+    if (validateEmail()) {
+      handleSendOtp();
+    }
+  };
+
   return (
-    <>
+    <Box>
       {!otpSent ? (
         <>
           <CustomTextField
@@ -33,51 +51,37 @@ const EmailOtpLogin = ({
             name="email"
             value={credentials.email}
             onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <Button
-            onClick={handleSendOtp}
+            onClick={handleSendOtpClick}
             variant="contained"
             sx={{ m: 1 }}
             fullWidth
+            disabled={loading}
           >
-            Send OTP
+            {loading ? "Sending..." : "Send OTP"}
           </Button>
-          <StyledLink onClick={toggleLoginMethod}>
+          <StyledLink onClick={toggleLoginMethod} mt={2}>
             Go back to login with Email & Password
           </StyledLink>
         </>
       ) : (
         <>
-          <Card sx={{ m: 5 }}>
-            <StyledCardContent>
-              <CustomText>Enter OTP sent to your Email ID</CustomText>
-              <OtpInput
-                value={credentials.otp}
-                onChange={handleOtpChange}
-                numInputs={6}
-                separator={<span>-</span>}
-              />
-              {otpError && <CustomText fontColor="error">{otpError}</CustomText>}
-              <SubmitButton
-                text="Verify OTP"
-                fullWidth
-                onClick={onVerifyOtpClick}
-                disabled={loading}
-              />
-              {loading && (
-                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                  <CircularProgress />
-                </Box>
-              )}
-            </StyledCardContent>
-          </Card>
-
+          <OtpForm
+            handleOtpChange={handleOtpChange}
+            onVerifyOtpClick={onVerifyOtpClick}
+            otpError={otpError}
+            loading={loading}
+            credentials={credentials}
+          />
           <StyledLink onClick={toggleLoginMethod}>
             Go back to login with Email & Password
           </StyledLink>
         </>
       )}
-    </>
+    </Box>
   );
 };
 

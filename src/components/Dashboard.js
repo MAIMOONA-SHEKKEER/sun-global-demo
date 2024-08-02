@@ -1,17 +1,14 @@
 import React from "react";
-import {
-  Card,
-  CardContent,
-  Avatar,
-  Typography,
-  Grid,
-  Divider,
-  Button,
-} from "@mui/material";
+import { Card, CardContent, Grid, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { StyledWrapper } from "../styles/StyledComponents";
+import {
+  CustomText,
+  StyledAvatar,
+  StyledWrapper,
+} from "../styles/StyledComponents";
 import { userData } from "../constants/userData";
 import { userFields } from "../constants/userFields";
+import PersonalInfo from "./PersonalInfo";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -33,39 +30,16 @@ const Dashboard = () => {
           >
             <Grid item>
               {userData.profileImage ? (
-                <Avatar
-                  alt={userData.name}
-                  src={userData.profileImage}
-                  sx={{ width: 100, height: 100 }}
-                />
+                <StyledAvatar alt={userData.name} src={userData.profileImage} />
               ) : (
-                <Avatar sx={{ p: 1 }}>{userData.name[0]}</Avatar>
+                <StyledAvatar>{userData.name[0]}</StyledAvatar>
               )}
             </Grid>
             <Grid item>
-              <Typography variant="h5" component="div" gutterBottom>
-                {userData.name}
-              </Typography>
+              <CustomText fontSize={25}>{userData.name}</CustomText>
             </Grid>
           </Grid>
-          <Divider sx={{ m: 2 }} />
-          <Grid container spacing={2}>
-            {userFields.map((field) => (
-              <React.Fragment key={field.value}>
-                <Grid item xs={4}>
-                  <Typography variant="body2" color="textSecondary">
-                    {field.label}:
-                  </Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Typography variant="body1" color="textPrimary">
-                    {userData[field.value]}
-                  </Typography>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid>
-          <Divider sx={{ my: 2 }} />
+          <PersonalInfo userFields={userFields} />
           <Grid container justifyContent="center">
             <Button variant="contained" color="primary" onClick={handleLogout}>
               Logout

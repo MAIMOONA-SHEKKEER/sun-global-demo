@@ -9,11 +9,19 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
+  CircularProgress,
 } from "@mui/material";
 import useRegistrationForm from "../hooks/useRegistrationForm";
-import { CustomHeader, CustomTextField, StyledGrid, StyledLink, SubmitButton } from "../styles/StyledComponents";
+import {
+  CustomText,
+  CustomTextField,
+  StyledGrid,
+  StyledLink,
+  SubmitButton,
+} from "../styles/StyledComponents";
 import Banner from "./Banner";
 import { userRoles } from "../constants/user";
+import { fieldMapping } from "../constants/registerData";
 
 const initialFormState = {
   fullName: "",
@@ -31,82 +39,47 @@ const RegistrationForm = () => {
     formData,
     errors,
     snackbar,
+    loading,
     handleChange,
     handleSubmit,
     handleSnackbarClose,
+    handleRoleChange,
   } = useRegistrationForm(initialFormState);
 
   return (
     <Grid container sx={{ height: "100vh" }}>
       <StyledGrid item xs={12} md={6}>
-        <CustomHeader>Registration Form</CustomHeader>
-        <Box component="form" p={5} maxWidth={550} onSubmit={handleSubmit}>
-          <CustomTextField
-            id="fullName"
-            label="Full Name"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            error={errors.fullName}
-            helperText={errors.fullName}
-          />
-          <CustomTextField
-            id="lastname"
-            label="Last Name"
-            name="lastname"
-            value={formData.lastname}
-            onChange={handleChange}
-            error={errors.lastname}
-            helperText={errors.lastname}
-          />
-          <CustomTextField
-            id="mobileNumber"
-            label="Mobile Number"
-            type="number"
-            name="mobileNumber"
-            value={formData.mobileNumber}
-            onChange={handleChange}
-            error={errors.mobileNumber}
-            helperText={errors.mobileNumber}
-          />
-          <CustomTextField
-            id="passportNumber"
-            label="Passport Number"
-            name="passportNumber"
-            value={formData.passportNumber}
-            onChange={handleChange}
-            error={errors.passportNumber}
-            helperText={errors.passportNumber}
-          />
-          <CustomTextField
-            id="password"
-            label="Password"
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            error={errors.password}
-            helperText={errors.password}
-          />
-          <CustomTextField
-            id="username"
-            label="Email Address"
-            type="email"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            error={errors.username}
-            helperText={errors.username}
-          />
-          <CustomTextField
-            id="idNumber"
-            label="ID Number"
-            name="idNumber"
-            value={formData.idNumber}
-            onChange={handleChange}
-            error={errors.idNumber}
-            helperText={errors.idNumber}
-          />
+        <Box component="form" p={5} ml={12} mr={12} onSubmit={handleSubmit}>
+          <CustomText fontSize={25} mb={2}>
+            Registration Form
+          </CustomText>
+          {Object.keys(formData)
+            .filter((field) => field !== "userRole")
+            .map((field) => {
+              const fieldType =
+                {
+                  password: "password",
+                  mobileNumber: "number",
+                  username: "email",
+                }[field] || "text";
+
+              return (
+                <CustomTextField
+                  key={field}
+                  required
+                  id={field}
+                  label={
+                    fieldMapping[field] || field.replace(/([A-Z])/g, " $1")
+                  }
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  error={!!errors[field]}
+                  helperText={errors[field] || ""}
+                  type={fieldType}
+                />
+              );
+            })}
           <FormControl sx={{ width: 275 }} error={!!errors.userRole}>
             <InputLabel id="userRole-label">User Role</InputLabel>
             <Select
@@ -114,10 +87,9 @@ const RegistrationForm = () => {
               id="userRole"
               name="userRole"
               value={formData.userRole}
-              onChange={handleChange}
+              onChange={handleRoleChange}
               label="User Role"
               sx={{ m: 1 }}
-              required
             >
               {userRoles.map((role) => (
                 <MenuItem key={role.value} value={role.value}>
@@ -125,10 +97,19 @@ const RegistrationForm = () => {
                 </MenuItem>
               ))}
             </Select>
-            {!!errors.userRole && <FormHelperText>{errors.userRole}</FormHelperText>}
+            {!!errors.userRole && (
+              <FormHelperText>{errors.userRole}</FormHelperText>
+            )}
           </FormControl>
-          <SubmitButton text="Register" width={520} />
-          <StyledLink href="/login">Already have an account? Login here</StyledLink>
+          <SubmitButton
+            text={loading ? <CircularProgress size={24} /> : "Register"}
+            pl={12}
+            pr={12}
+            disabled={loading}
+          />
+          <StyledLink href="/login">
+            Already have an account? Login here
+          </StyledLink>
         </Box>
       </StyledGrid>
       <Banner />
@@ -138,7 +119,11 @@ const RegistrationForm = () => {
         onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>

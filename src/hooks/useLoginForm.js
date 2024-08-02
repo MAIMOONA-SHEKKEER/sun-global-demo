@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { loginUser, sendOtp } from "../api/auth";
 import { useNavigate } from "react-router-dom";
-import { fieldMapping } from "../constants/registerData";
-import { verifyOtp } from "../api/user";
+import { loginUser } from "../api/auth";
+import {
+  generateSnackbarMessage,
+  handleSendOtp,
+  handleVerifyOtp,
+  validateOtp,
+} from "../utils/authUtils";
+import { validateEmail, validatePassword } from "../utils/validators";
 
 export const useLoginForm = () => {
   const [credentials, setCredentials] = useState({
@@ -36,6 +41,10 @@ export const useLoginForm = () => {
 
   const validate = () => {
     const newErrors = {};
+    if (!validateEmail(credentials.email))
+      newErrors.email = "Invalid email address";
+    if (!validatePassword(credentials.password))
+      newErrors.password = "Password must be at least 6 characters long";
     if (!credentials.email) newErrors.email = "Email is required";
     if (loginMethod === "email-password" && !credentials.password) {
       newErrors.password = "Password is required";
@@ -56,27 +65,6 @@ export const useLoginForm = () => {
     handleLogin();
   };
 
-  const generateSnackbarMessage = (response) => {
-    if (response.message === "REQUEST_BODY_VALIDATION_ERROR") {
-      const fieldsWithErrors = Object.keys(response.payload).map(
-        (field) =>
-          fieldMapping[field] ||
-          field.replace(/Field --> /, "").replace(/([A-Z])/g, " $1")
-      );
-      const uniqueFields = [...new Set(fieldsWithErrors)];
-      return `Please check ${uniqueFields.join(", ")}`;
-    }
-
-    if (response.payload.includes("Email address is not verified"))
-      return "Email address is not verified";
-    if (response.payload.includes("Invalid credentials provided"))
-      return "Invalid Credentials Provided";
-    if (response.payload.includes("OTP has not expired"))
-      return "Previously requested OTP has not expired yet";
-
-    return null;
-  };
-
   const handleLogin = async () => {
     try {
       const response = await loginUser(loginMethod, credentials);
@@ -92,7 +80,7 @@ export const useLoginForm = () => {
         const errorMessage = generateSnackbarMessage(response);
         setSnackbar({
           open: true,
-          message: errorMessage,
+          message: errorMessage || "Login failed. Please try again.",
           severity: "error",
         });
       }
@@ -105,73 +93,15 @@ export const useLoginForm = () => {
     }
   };
 
-  const handleSendOtp = async () => {
-    try {
-      const response = await sendOtp(credentials.email, "email-otp");
-      if (response.successful) {
-        setSnackbar({
-          open: true,
-          message: "OTP sent to your email!",
-          severity: "success",
-        });
-        setOtpSent(true);
-      } else {
-        const errorMessage = generateSnackbarMessage(response);
-        setSnackbar({
-          open: true,
-          message: errorMessage || "Failed to send OTP.",
-          severity: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "Failed to send OTP.",
-        severity: "error",
-      });
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    try {
-      const response = await verifyOtp(credentials.email, credentials.otp);
-
-      if (response.successful) {
-        setSnackbar({
-          open: true,
-          message: "OTP verified successfully!",
-          severity: "success",
-        });
-        navigate("/dashboard");
-      } else {
-        setSnackbar({
-          open: true,
-          message: generateSnackbarMessage(response),
-          severity: "error",
-        });
-      }
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: "OTP verification failed. Please try again.",
-        severity: "error",
-      });
-    }
-  };
-
-  const validateOtp = () => {
-    if (!credentials.otp || credentials.otp.length < 6) {
-      setOtpError("OTP must be 6 digits long.");
-      return false;
-    }
-    setOtpError("");
-    return true;
-  };
-
   const onVerifyOtpClick = () => {
-    if (validateOtp()) {
-      setLoading(true); // Set loading to true when verification starts
-      handleVerifyOtp().finally(() => setLoading(false)); // Set loading to false when verification completes
+    if (validateOtp(credentials.otp, setOtpError)) {
+      setLoading(true);
+      handleVerifyOtp(
+        credentials.email,
+        credentials.otp,
+        setSnackbar,
+        navigate
+      ).finally(() => setLoading(false));
     }
   };
 
@@ -194,11 +124,13 @@ export const useLoginForm = () => {
     handleChange,
     handleOtpChange,
     handleSubmit,
-    handleSendOtp,
+    handleSendOtp: () =>
+      handleSendOtp(credentials.email, setSnackbar, setOtpSent),
     toggleLoginMethod,
     handleSnackbarClose,
     onVerifyOtpClick,
     otpError,
     loading,
+    setErrors,
   };
 };

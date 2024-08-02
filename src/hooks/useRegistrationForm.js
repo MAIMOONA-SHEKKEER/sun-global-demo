@@ -1,21 +1,42 @@
 import { useState } from "react";
 import { registerUser } from "../api/user";
+import { validateEmail, validateMobile, validatePassword } from "../utils/validators";
 import { fieldMapping } from "../constants/registerData";
-import { validateEmail, validatePassword, validateMobile } from "../utils/validators";
+import { generateSnackbarMessage } from "../utils/authUtils";
 
 const useRegistrationForm = (initialState) => {
-  const [formData, setFormData] = useState(initialState);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    lastname: "",
+    mobileNumber: "",
+    passportNumber: "",
+    password: "",
+    userRole: "",
+    username: "",
+    idNumber: "",
+  });
+
   const [errors, setErrors] = useState({});
   const [snackbar, setSnackbar] = useState({
     open: false,
-    message: "",
-    severity: "success",
+    message: '',
+    severity: 'success',
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    if (errors[name]) {
+      setErrors((prevState) => ({ ...prevState, [name]: "" }));
+    }
+  };
+
+  const handleRoleChange = (e) => {
+    setFormData((prevState) => ({ ...prevState, userRole: e.target.value }));
+    if (errors.userRole) {
+      setErrors((prevState) => ({ ...prevState, userRole: "" }));
+    }
   };
 
   const validate = () => {
@@ -34,62 +55,49 @@ const useRegistrationForm = (initialState) => {
     return newErrors;
   };
 
-  const generateErrorMessage = (response) => {
-    if (response.message === "REQUEST_BODY_VALIDATION_ERROR") {
-      const fieldsWithErrors = Object.keys(response.payload).map(
-        (field) => fieldMapping[field] || field.replace(/Field --> /, "").replace(/([A-Z])/g, " $1")
-      );
-      const uniqueFields = [...new Set(fieldsWithErrors)];
-      return `Please check ${uniqueFields.join(", ")}`;
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length === 0) {
+      handleRegistration();
+    } else {
+      setErrors(validationErrors);
     }
-    
-    if (response.payload.includes("already exists")) return "Email already registered";
-    if (response.payload.includes("Invalid ID")) return "Invalid ID number";
-    if (response.payload.includes("Email address is not verified")) return "Email address is not verified";
-    if (response.payload.includes("invalid email")) return "Invalid email address";
-    
-    return response.message || "Registration failed.";
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setSnackbar({
-        open: true,
-        message: "Please fill in all required fields.",
-        severity: "error",
-      });
-      return;
-    }
-
+  const handleRegistration = async () => {
+    setLoading(true);
     try {
       const response = await registerUser(formData);
       if (response.successful) {
         setSnackbar({
           open: true,
-          message: "Registration successful!",
-          severity: "success",
+          message: 'Registration successful!',
+          severity: 'success',
         });
       } else {
-        const errorMessage = generateErrorMessage(response);
+        const errorMessage = generateSnackbarMessage(response);
         setSnackbar({
           open: true,
           message: errorMessage,
-          severity: "error",
+          severity: 'error',
         });
       }
-    } catch {
+    } catch (error) {
       setSnackbar({
         open: true,
-        message: "Registration failed. Please try again.",
-        severity: "error",
+        message: 'Registration failed. Please try again.',
+        severity: 'error',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSnackbarClose = () => setSnackbar((prev) => ({ ...prev, open: false }));
+  const handleSnackbarClose = () => {
+    setSnackbar(false);
+  };
+
 
   return {
     formData,
@@ -98,6 +106,7 @@ const useRegistrationForm = (initialState) => {
     handleChange,
     handleSubmit,
     handleSnackbarClose,
+    handleRoleChange,loading
   };
 };
 

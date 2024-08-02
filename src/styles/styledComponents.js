@@ -1,9 +1,11 @@
 import React from "react";
 import {
   Alert,
+  Avatar,
   Box,
   Button,
   Card,
+  CircularProgress,
   Grid,
   InputAdornment,
   Link,
@@ -26,26 +28,6 @@ const RedAsterisk = styled("span")({
   color: "red",
 });
 
-const CustomHeader = styled(Typography)(({ theme, fontSize = 25, fontColor, font }) => ({
-  color: fontColor ?? theme.palette.primary.main,
-  fontFamily: "initial",
-  fontSize: fontSize,
-  wordWrap: "break-word",
-  textAlign: "start",
-  [theme.breakpoints.down("xl")]: {
-    fontSize: fontSize - 2,
-  },
-  [theme.breakpoints.down("lg")]: {
-    fontSize: fontSize - 4,
-  },
-  [theme.breakpoints.down("md")]: {
-    fontSize: fontSize - 6,
-  },
-  [theme.breakpoints.down("sm")]: {
-    fontSize: fontSize - 8,
-  },
-}));
-
 const CustomTextField = ({
   type,
   label,
@@ -53,6 +35,7 @@ const CustomTextField = ({
   fullWidth,
   onClick,
   showPassword,
+  error,
   ...props
 }) => {
   const getAdornment = () => {
@@ -102,6 +85,7 @@ const CustomTextField = ({
       type={type}
       autoFocus
       fullWidth={fullWidth}
+      error={error}
       margin="normal"
       label={
         required ? (
@@ -132,8 +116,32 @@ const StyledCardContent = styled(Card)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  justifyContent: "flex-start",
+  padding: theme.spacing(10),
+}));
+
+const StyledWrapper = styled(Box)({
+  padding: 20,
+  display: "flex",
   justifyContent: "center",
-  padding: theme.spacing(5),
+  alignItems: "center",
+  height: "90vh",
+  backgroundColor: "#f5f5f5",
+});
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  padding: 10,
+  backgroundColor: theme.palette.primary.main,
+  margin: 10,
+  color: theme.palette.primary.contrastText,
+}));
+
+const LoadingIndicator = styled(CircularProgress)(() => ({
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  marginTop: "-12px",
+  marginLeft: "-12px",
 }));
 
 const SubmitButton = ({
@@ -141,7 +149,8 @@ const SubmitButton = ({
   color = "primary",
   disabled,
   fullWidth,
-  width,
+  pl,
+  pr,
   onClick,
   ...otherProps
 }) => {
@@ -153,7 +162,7 @@ const SubmitButton = ({
 
   return (
     <StyledButton
-      sx={{ width: width }}
+      sx={{ paddingLeft: pl, paddingRight: pr }}
       fullWidth={fullWidth}
       variant="contained"
       color={color}
@@ -167,13 +176,14 @@ const SubmitButton = ({
   );
 };
 
-const CustomText = styled(Typography)(({ theme, fontSize = 18, fontColor, font }) => ({
-  color: fontColor ?? theme.palette.primary.main,
+const CustomText = styled(Typography)(({ theme, fontSize = 18, color }) => ({
+  color: color ?? theme.palette.primary.main,
   fontFamily: "initial",
   fontSize: fontSize,
   wordWrap: "break-word",
   textAlign: "start",
   marginLeft: 10,
+  padding:5,
   [theme.breakpoints.down("xl")]: {
     fontSize: fontSize - 2,
   },
@@ -212,18 +222,8 @@ const CustomSnackbar = ({ open, message, severity, onClose }) => (
   </Snackbar>
 );
 
-const StyledWrapper = styled(Box)({
-  padding: 20,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
-  backgroundColor: "#f5f5f5",
-});
-
 export {
   RedAsterisk,
-  CustomHeader,
   CustomTextField,
   StyledGrid,
   StyledCardContent,
@@ -232,4 +232,6 @@ export {
   StyledLink,
   CustomSnackbar,
   StyledWrapper,
+  StyledAvatar,
+  LoadingIndicator
 };

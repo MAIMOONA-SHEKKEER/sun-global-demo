@@ -37,7 +37,7 @@ export const sendOtp = async (email, combination) => {
   }
 };
 
-export const resetPassword = async (email, newPassword, otp) => {
+export const resetPassword = async ({ email, newPassword, otp }) => {
   try {
     const response = await api.post(endpoints.resetPassword, {
       email,

@@ -1,10 +1,11 @@
 import React from "react";
-import { Grid, Avatar, Box, Divider, Chip } from "@mui/material";
+import { Grid, Box, Divider, Chip } from "@mui/material";
 import {
-  CustomHeader,
+  CustomText,
   CustomSnackbar,
   StyledGrid,
   StyledLink,
+  StyledAvatar,
 } from "../styles/StyledComponents";
 import Banner from "./Banner";
 import EmailPasswordLogin from "./EmailPasswordLogin";
@@ -24,14 +25,19 @@ const LoginForm = () => {
     handleSendOtp,
     toggleLoginMethod,
     handleSnackbarClose,
+    onVerifyOtpClick,
+    otpError,
+    setErrors,
   } = useLoginForm();
 
   return (
     <Grid container sx={{ height: "100vh" }}>
       <StyledGrid container item xs={12} md={6}>
-        <Avatar sx={{ m: 1 }} />
-        <CustomHeader>Welcome Back!</CustomHeader>
         <Box component="form" p={5} onSubmit={handleSubmit}>
+          <StyledAvatar />
+          <CustomText fontSize={25} mb={1}>
+            Welcome Back!
+          </CustomText>
           {loginMethod === "email-password" ? (
             <EmailPasswordLogin
               credentials={credentials}
@@ -48,10 +54,13 @@ const LoginForm = () => {
               otpSent={otpSent}
               toggleLoginMethod={toggleLoginMethod}
               errors={errors}
+              onVerifyOtpClick={onVerifyOtpClick}
+              otpError={otpError}
+              setErrors={setErrors}
             />
           )}
-          <Divider>
-            <Chip label="Or" size="small" color="primary" />
+          <Divider sx={{ m: 2 }}>
+            <Chip label="OR" size="small" color="primary" />
           </Divider>
           <StyledLink href="/register">
             Don't have an account? Register here
