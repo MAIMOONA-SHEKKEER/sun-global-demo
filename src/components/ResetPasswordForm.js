@@ -6,6 +6,7 @@ import {
   CustomTextField,
   StyledGrid,
   SubmitButton,
+  StyledLink,
 } from "../styles/StyledComponents";
 import Banner from "./Banner";
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
@@ -23,13 +24,15 @@ const ResetPasswordForm = () => {
     handleSnackbarClose,
     loading,
     handleOtpChange,
+    showResendOtpButton, 
+    onResendOtpClick, 
   } = useResetPasswordForm();
 
   return (
     <Grid container sx={{ height: "100vh" }}>
       <StyledGrid item xs={12} md={6}>
-        <Box component="form" p={2} onSubmit={handleSubmit} gap={5}>
-          <CustomText fontSize={25}>
+        <Box component="form" p={2} onSubmit={handleSubmit}>
+          <CustomText fontSize={22}>
             {otpSent ? "Reset Password" : "Request OTP for Password Change"}
           </CustomText>
           {!otpSent ? (
@@ -63,6 +66,8 @@ const ResetPasswordForm = () => {
                 loading={loading}
                 credentials={credentials}
                 reset={"reset"}
+                showResendOtpButton={showResendOtpButton} 
+                onResendOtpClick={onResendOtpClick} 
               />
               <CustomTextField
                 fullWidth
@@ -85,6 +90,9 @@ const ResetPasswordForm = () => {
               />
             </>
           )}
+           <StyledLink href="/login" fontSize={18}>
+            Go back to login page
+          </StyledLink>
         </Box>
       </StyledGrid>
       <Banner />

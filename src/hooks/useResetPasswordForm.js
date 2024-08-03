@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   handleSendOtp,
-  validateOtp,
   generateSnackbarMessage,
+  validateOtp,
 } from "../utils/authUtils";
 import { resetPassword } from "../api/auth";
 import { validateEmail } from "../utils/validators";
@@ -23,7 +23,7 @@ export const useResetPasswordForm = () => {
     message: "",
     severity: "success",
   });
-
+  const [showResendOtpButton, setShowResendOtpButton] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
@@ -33,20 +33,27 @@ export const useResetPasswordForm = () => {
   };
 
   const handleOtpChange = (value) => {
-    setCredentials(prev => ({
-      ...prev,
-      otp: value
-    }));
+    setCredentials((prev) => ({ ...prev, otp: value }));
+
+    if (otpError) {
+      setOtpError("");
+    }
   };
 
   const validate = () => {
     const newErrors = {};
-    if (!validateEmail(credentials.email))
-      newErrors.email = "Invalid email address";
-    if (!credentials.email) newErrors.email = "Email is required";
-    if (!credentials.otp) newErrors.otp = "OTP is required";
-    if (!credentials.newPassword)
-      newErrors.newPassword = "New password is required";
+    if (!credentials.email) {
+      newErrors.email = "Email is required.";
+    } else if (!validateEmail(credentials.email)) {
+      newErrors.email = "Invalid email address.";
+    }
+    if (otpSent && !credentials.otp) {
+      newErrors.otp = "OTP is required.";
+    }
+    if (otpSent && !credentials.newPassword) {
+      newErrors.newPassword = "New password is required.";
+    }
+
     return newErrors;
   };
 
@@ -61,16 +68,28 @@ export const useResetPasswordForm = () => {
   };
 
   const handleResetPassword = async () => {
-    if (validateOtp(credentials.otp, setOtpError)) {
-      setLoading(true);
-      try {
-        const resetResponse = await resetPassword({
-          email: credentials.email,
-          newPassword: credentials.newPassword,
-          otp: credentials.otp,
-        });
-
-        if (resetResponse.successful) {
+    console.log("handleResetPassword called");
+    if (!validateOtp(credentials.otp, setOtpError)) {
+      setSnackbar({
+        open: true,
+        message: "Invalid OTP. Please try again.",
+        severity: "error",
+      });
+      setShowResendOtpButton(true);
+      setLoading(false);
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const resetResponse = await resetPassword({
+        email: credentials.email,
+        newPassword: credentials.newPassword,
+        otp: credentials.otp,
+      });
+  
+      if (resetResponse && resetResponse.successful) {
+        if (resetResponse.payload.success) {
           setSnackbar({
             open: true,
             message: "Password reset successfully.",
@@ -78,34 +97,47 @@ export const useResetPasswordForm = () => {
           });
           navigate("/login");
         } else {
-          const errorMessage = generateSnackbarMessage(resetResponse);
           setSnackbar({
             open: true,
-            message:
-              errorMessage || "Failed to reset password. Please try again.",
+            message: "Invalid OTP provided.",
             severity: "error",
           });
+          setShowResendOtpButton(true);
         }
-      } catch (error) {
+      } else {
+        const errorMessage =
+          generateSnackbarMessage(resetResponse) ||
+          "Failed to reset password. Please try again.";
         setSnackbar({
           open: true,
-          message: error.message || "An error occurred. Please try again.",
+          message: errorMessage,
           severity: "error",
         });
-      } finally {
-        setLoading(false);
+        if (errorMessage.includes("invalid")) {
+          setShowResendOtpButton(true);
+        }
       }
-    } else {
+    } catch (error) {
       setSnackbar({
         open: true,
-        message: "Invalid OTP. Please try again.",
+        message: error.message || "An error occurred. Please try again.",
         severity: "error",
       });
+    } finally {
+      setLoading(false);
     }
   };
-
+  
   const handleSnackbarClose = () =>
     setSnackbar((prev) => ({ ...prev, open: false }));
+
+  const onResendOtpClick = () => {
+    setLoading(true);
+    handleSendOtp(credentials.email, setSnackbar, setOtpSent).finally(() => {
+      setLoading(false);
+      setShowResendOtpButton(false);
+    });
+  };
 
   return {
     credentials,
@@ -119,6 +151,8 @@ export const useResetPasswordForm = () => {
     handleSnackbarClose,
     otpError,
     loading,
-    handleOtpChange
+    handleOtpChange,
+    showResendOtpButton,
+    onResendOtpClick,
   };
 };

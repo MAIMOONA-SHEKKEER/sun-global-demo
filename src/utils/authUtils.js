@@ -17,14 +17,15 @@ export const generateSnackbarMessage = (response) => {
     return "Email address is not verified";
   if (response.payload.includes("Invalid credentials provided"))
     return "Invalid Credentials Provided";
-  if (response.payload.includes("Invalid ID"))
-    return "Invalid ID number";
+  if (response.payload.includes("Invalid ID")) return "Invalid ID number";
   if (response.payload.includes("already exists"))
     return "Email address already exists";
   if (response.payload.includes("OTP has not expired"))
     return "Previously requested OTP has not expired yet";
   if (response.payload.includes("Missing final '@domaind"))
     return "Please verify email address";
+  if (response.payload.includes("Provided Otp is redeemed already"))
+    return "Provided Otp is already redeemed";
   if (response.payload.includes("could not execute statement"))
     return "There was a problem with your request. Please check your input.";
   return null;
@@ -67,18 +68,29 @@ export const handleVerifyOtp = async (
   otp,
   setSnackbar,
   navigate,
-  route = "/dashboard"
+  route = "/dashboard",
+  setShowResendOtpButton
 ) => {
   try {
     const response = await verifyOtp(email, otp);
 
-    if (response.successful) {
-      setSnackbar({
-        open: true,
-        message: "OTP verified successfully!",
-        severity: "success",
-      });
-      navigate(route);
+    if (response && response.successful) {
+      if (response.payload.validOtpProvided) {
+        setSnackbar({
+          open: true,
+          message: response.payload.message || "OTP verified successfully!",
+          severity: "success",
+        });
+        localStorage.setItem('authToken', 'login-through-otp');
+        navigate(route);
+      } else {
+        setSnackbar({
+          open: true,
+          message: "Invalid OTP provided.",
+          severity: "error",
+        });
+        setShowResendOtpButton(true);
+      }
     } else {
       setSnackbar({
         open: true,

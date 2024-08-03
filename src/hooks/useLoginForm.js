@@ -20,6 +20,7 @@ export const useLoginForm = () => {
   const [errors, setErrors] = useState({});
   const [otpError, setOtpError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showResendOtpButton, setShowResendOtpButton] = useState(false); // New state
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -100,7 +101,9 @@ export const useLoginForm = () => {
         credentials.email,
         credentials.otp,
         setSnackbar,
-        navigate
+        navigate,
+        "/dashboard",
+        setShowResendOtpButton
       ).finally(() => setLoading(false));
     }
   };
@@ -114,6 +117,14 @@ export const useLoginForm = () => {
 
   const handleSnackbarClose = () =>
     setSnackbar((prev) => ({ ...prev, open: false }));
+
+  const onResendOtpClick = () => {
+    setLoading(true);
+    handleSendOtp(credentials.email, setSnackbar, setOtpSent).finally(() => {
+      setLoading(false);
+      setShowResendOtpButton(false); 
+    });
+  };
 
   return {
     credentials,
@@ -132,5 +143,7 @@ export const useLoginForm = () => {
     otpError,
     loading,
     setErrors,
+    showResendOtpButton, 
+    onResendOtpClick, 
   };
 };

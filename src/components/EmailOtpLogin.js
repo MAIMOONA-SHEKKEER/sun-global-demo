@@ -15,6 +15,8 @@ const EmailOtpLogin = ({
   errors,
   toggleLoginMethod,
   setErrors,
+  showResendOtpButton, 
+  onResendOtpClick, 
 }) => {
   
   const validateEmail = () => {
@@ -75,6 +77,8 @@ const EmailOtpLogin = ({
             otpError={otpError}
             loading={loading}
             credentials={credentials}
+            showResendOtpButton={showResendOtpButton}
+            onResendOtpClick={onResendOtpClick}
           />
           <StyledLink onClick={toggleLoginMethod}>
             Go back to login with Email & Password

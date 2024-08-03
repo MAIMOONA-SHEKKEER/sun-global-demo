@@ -28,6 +28,8 @@ const LoginForm = () => {
     onVerifyOtpClick,
     otpError,
     setErrors,
+    showResendOtpButton, 
+    onResendOtpClick, 
   } = useLoginForm();
 
   return (
@@ -57,6 +59,9 @@ const LoginForm = () => {
               onVerifyOtpClick={onVerifyOtpClick}
               otpError={otpError}
               setErrors={setErrors}
+              showResendOtpButton={showResendOtpButton}
+              onResendOtpClick={onResendOtpClick}
+
             />
           )}
           <Divider sx={{ m: 2 }}>

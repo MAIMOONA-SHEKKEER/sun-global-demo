@@ -49,3 +49,12 @@ export const resetPassword = async ({ email, newPassword, otp }) => {
     handleApiError(error);
   }
 };
+
+export const verifyToken = async () => {
+  try {
+    const response = await api.get(endpoints.verifyToken); 
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
