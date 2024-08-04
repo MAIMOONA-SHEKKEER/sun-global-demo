@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Grid,
@@ -45,6 +45,14 @@ const RegistrationForm = () => {
     handleSnackbarClose,
     handleRoleChange,
   } = useRegistrationForm(initialFormState);
+  const [showPasswords, setShowPasswords] = useState({});
+
+  const handleClickShowPassword = (field) => {
+    setShowPasswords((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
 
   return (
     <Grid container sx={{ height: "100vh" }}>
@@ -58,7 +66,7 @@ const RegistrationForm = () => {
             .map((field) => {
               const fieldType =
                 {
-                  password: "password",
+                  password: showPasswords[field] ? "password-visible" : "password",
                   mobileNumber: "number",
                   username: "email",
                 }[field] || "text";
@@ -77,6 +85,8 @@ const RegistrationForm = () => {
                   error={!!errors[field]}
                   helperText={errors[field] || ""}
                   type={fieldType}
+                  showPassword={showPasswords[field]}
+                  onClick={() => handleClickShowPassword(field)}
                 />
               );
             })}

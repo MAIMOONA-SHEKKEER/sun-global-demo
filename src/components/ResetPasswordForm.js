@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Grid, CircularProgress } from "@mui/material";
 import {
   CustomText,
@@ -7,6 +7,7 @@ import {
   StyledGrid,
   SubmitButton,
   StyledLink,
+  CustomButton,
 } from "../styles/StyledComponents";
 import Banner from "./Banner";
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
@@ -24,9 +25,15 @@ const ResetPasswordForm = () => {
     handleSnackbarClose,
     loading,
     handleOtpChange,
-    showResendOtpButton, 
-    onResendOtpClick, 
+    showResendOtpButton,
+    onResendOtpClick,
   } = useResetPasswordForm();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   return (
     <Grid container sx={{ height: "100vh" }}>
@@ -51,11 +58,10 @@ const ResetPasswordForm = () => {
                 helperText={errors.email}
                 sx={{ marginBottom: 2 }}
               />
-              <SubmitButton
-                text={loading ? <CircularProgress size={24} /> : "Send OTP"}
-                fullWidth
+              <CustomButton
                 onClick={handleSendOtp}
                 disabled={credentials.email.trim() === "" || loading}
+                text={loading ? <CircularProgress size={24} /> : "Send OTP"}
               />
             </>
           ) : (
@@ -66,31 +72,29 @@ const ResetPasswordForm = () => {
                 loading={loading}
                 credentials={credentials}
                 reset={"reset"}
-                showResendOtpButton={showResendOtpButton} 
-                onResendOtpClick={onResendOtpClick} 
+                showResendOtpButton={showResendOtpButton}
+                onResendOtpClick={onResendOtpClick}
               />
               <CustomTextField
                 fullWidth
                 required
                 id="newPassword"
                 label="New Password"
-                type="password"
+                type={showPassword ? "password-visible" : "password"}
                 placeholder="Enter your new password"
                 name="newPassword"
                 value={credentials.newPassword}
                 onChange={handleChange}
                 error={!!errors.newPassword}
                 helperText={errors.newPassword}
+                showPassword={showPassword}
+                onClick={handleClickShowPassword}
                 sx={{ marginBottom: 2 }}
               />
-              <SubmitButton
-                text={loading ? <CircularProgress size={24} /> : "Reset"}
-                fullWidth
-                disabled={loading}
-              />
+              <SubmitButton text={"Reset"} fullWidth />
             </>
           )}
-           <StyledLink href="/login" fontSize={18}>
+          <StyledLink href="/login" fontSize={18}>
             Go back to login page
           </StyledLink>
         </Box>

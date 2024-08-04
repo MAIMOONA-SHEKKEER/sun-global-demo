@@ -18,10 +18,9 @@ import IconButton from "@mui/material/IconButton";
 import {
   Phone,
   Email,
-  Lock,
   VisibilityOff,
   Visibility,
-  AccountCircle,
+  Person,
 } from "@mui/icons-material";
 
 const RedAsterisk = styled("span")({
@@ -41,6 +40,7 @@ const CustomTextField = ({
   const getAdornment = () => {
     switch (type) {
       case "password":
+      case "password-visible":
         return (
           <InputAdornment position="end">
             <IconButton
@@ -50,12 +50,6 @@ const CustomTextField = ({
             >
               {showPassword ? <VisibilityOff /> : <Visibility />}
             </IconButton>
-          </InputAdornment>
-        );
-      case "text":
-        return (
-          <InputAdornment position="start">
-            <AccountCircle />
           </InputAdornment>
         );
       case "email":
@@ -73,7 +67,7 @@ const CustomTextField = ({
       default:
         return (
           <InputAdornment position="start">
-            <Lock />
+            <Person />
           </InputAdornment>
         );
     }
@@ -136,6 +130,33 @@ const StyledAvatar = styled(Avatar)(({ theme }) => ({
   color: theme.palette.primary.contrastText,
 }));
 
+const CustomButton = ({
+  text,
+  color = "primary",
+  disabled,
+  onClick,
+  ...otherProps
+}) => {
+  const StyledButton = styled(Button)(({ theme }) => ({
+    marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+  }));
+
+  return (
+    <StyledButton
+      fullWidth
+      variant="contained"
+      color={color}
+      disabled={disabled}
+      onClick={onClick}
+      {...otherProps}
+    >
+      {text}
+    </StyledButton>
+  );
+};
+
 const LoadingIndicator = styled(CircularProgress)(() => ({
   position: "absolute",
   top: "50%",
@@ -183,7 +204,7 @@ const CustomText = styled(Typography)(({ theme, fontSize = 18, color }) => ({
   wordWrap: "break-word",
   textAlign: "start",
   marginLeft: 10,
-  padding:5,
+  padding: 5,
   [theme.breakpoints.down("xl")]: {
     fontSize: fontSize - 2,
   },
@@ -233,5 +254,6 @@ export {
   CustomSnackbar,
   StyledWrapper,
   StyledAvatar,
-  LoadingIndicator
+  LoadingIndicator,
+  CustomButton,
 };
