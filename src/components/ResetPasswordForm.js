@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { Box, Grid, CircularProgress } from "@mui/material";
-import {
-  CustomText,
-  CustomSnackbar,
-  CustomTextField,
-  StyledGrid,
-  SubmitButton,
-  StyledLink,
-  CustomButton,
-} from "../styles/StyledComponents";
 import Banner from "./Banner";
 import { useResetPasswordForm } from "../hooks/useResetPasswordForm";
 import { OtpForm } from "./OtpForm";
+import StyledGrid from "../styles/components/StyledGrid";
+import { CustomText } from "../styles/components/CustomText";
+import CustomTextField from "../styles/components/CustomTextField";
+import CustomButton from "../styles/components/CustomButton";
+import StyledLink from "../styles/components/StyledLink";
+import CustomSnackbar from "../styles/components/CustomSnackbar";
 
 const ResetPasswordForm = () => {
   const {
@@ -91,7 +88,7 @@ const ResetPasswordForm = () => {
                 onClick={handleClickShowPassword}
                 sx={{ marginBottom: 2 }}
               />
-              <SubmitButton text={"Reset"} fullWidth />
+              <CustomButton type="submit" text={"Reset"} fullWidth />
             </>
           )}
           <StyledLink href="/login" fontSize={18}>

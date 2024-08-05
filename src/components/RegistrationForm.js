@@ -12,16 +12,14 @@ import {
   CircularProgress,
 } from "@mui/material";
 import useRegistrationForm from "../hooks/useRegistrationForm";
-import {
-  CustomText,
-  CustomTextField,
-  StyledGrid,
-  StyledLink,
-  SubmitButton,
-} from "../styles/StyledComponents";
 import Banner from "./Banner";
 import { userRoles } from "../constants/user";
 import { fieldMapping } from "../constants/registerData";
+import CustomButton from "../styles/components/CustomButton";
+import StyledGrid from "../styles/components/StyledGrid";
+import { CustomText } from "../styles/components/CustomText";
+import CustomTextField from "../styles/components/CustomTextField";
+import StyledLink from "../styles/components/StyledLink";
 
 const initialFormState = {
   fullName: "",
@@ -66,7 +64,9 @@ const RegistrationForm = () => {
             .map((field) => {
               const fieldType =
                 {
-                  password: showPasswords[field] ? "password-visible" : "password",
+                  password: showPasswords[field]
+                    ? "password-visible"
+                    : "password",
                   mobileNumber: "number",
                   username: "email",
                 }[field] || "text";
@@ -111,7 +111,8 @@ const RegistrationForm = () => {
               <FormHelperText>{errors.userRole}</FormHelperText>
             )}
           </FormControl>
-          <SubmitButton
+          <CustomButton
+            type="submit"
             text={loading ? <CircularProgress size={24} /> : "Register"}
             pl={12}
             pr={12}

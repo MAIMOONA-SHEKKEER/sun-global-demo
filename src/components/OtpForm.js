@@ -1,12 +1,10 @@
 import React from "react";
-import {
-  CustomText,
-  StyledCardContent,
-  SubmitButton,
-} from "../styles/StyledComponents";
 import { Box, Card, CircularProgress, Button } from "@mui/material";
 import OtpInput from "react18-input-otp";
 import theme from "../styles/Theme";
+import { CustomText } from "../styles/components/CustomText";
+import StyledCardContent from "../styles/components/StyledCardContent";
+import CustomButton from "../styles/components/CustomButton";
 
 export const OtpForm = ({
   credentials,
@@ -30,9 +28,10 @@ export const OtpForm = ({
             separator={<span>-</span>}
           />
           {otpError && <CustomText color={theme.palette.error.main}>{otpError}</CustomText>}
-          {!reset && <SubmitButton
+          {!reset && <CustomButton
             text="Verify OTP"
             fullWidth
+            type="submit"
             onClick={onVerifyOtpClick}
             disabled={loading}
           />}

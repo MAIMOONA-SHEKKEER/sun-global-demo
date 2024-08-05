@@ -1,17 +1,19 @@
-import React from "react";
-import { Card, CardContent, Grid, Button } from "@mui/material";
+import React, { useState } from "react";
+import { Box, CssBaseline, AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import Sidebar from "./Sidebar";
+import DashboardContent from "./DashboardContent";
 import { useNavigate } from "react-router-dom";
-import {
-  CustomText,
-  StyledAvatar,
-  StyledWrapper,
-} from "../styles/StyledComponents";
-import { userData } from "../constants/userData";
-import { userFields } from "../constants/userFields";
-import PersonalInfo from "./PersonalInfo";
+
+const drawerWidth = 240;
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
@@ -20,35 +22,32 @@ const Dashboard = () => {
   };
 
   return (
-    <StyledWrapper>
-      <Card sx={{ maxWidth: 500, width: "100%", boxShadow: 6 }}>
-        <CardContent>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            alignItems="center"
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: "none" } }}
           >
-            <Grid item>
-              {userData.profileImage ? (
-                <StyledAvatar alt={userData.name} src={userData.profileImage} />
-              ) : (
-                <StyledAvatar>{userData.name[0]}</StyledAvatar>
-              )}
-            </Grid>
-            <Grid item>
-              <CustomText fontSize={25}>{userData.name}</CustomText>
-            </Grid>
-          </Grid>
-          <PersonalInfo userFields={userFields} />
-          <Grid container justifyContent="center">
-            <Button variant="contained" color="primary" onClick={handleLogout}>
-              Logout
-            </Button>
-          </Grid>
-        </CardContent>
-      </Card>
-    </StyledWrapper>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap>
+            Dashboard
+          </Typography>
+        </Toolbar>
+      </AppBar>
+      <Sidebar
+        drawerWidth={drawerWidth}
+        mobileOpen={mobileOpen}
+        handleDrawerToggle={handleDrawerToggle}
+        handleLogout={handleLogout}
+      />
+      <DashboardContent drawerWidth={drawerWidth} handleLogout={handleLogout} />
+    </Box>
   );
 };
 

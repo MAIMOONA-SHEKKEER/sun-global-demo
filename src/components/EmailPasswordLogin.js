@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import {
-  CustomTextField,
-  StyledLink,
-  SubmitButton,
-} from "../styles/StyledComponents";
+
+import CustomButton from "../styles/components/CustomButton";
+import CustomTextField from "../styles/components/CustomTextField";
+import StyledLink from "../styles/components/StyledLink";
 
 const EmailPasswordLogin = ({
   credentials,
@@ -48,7 +47,7 @@ const EmailPasswordLogin = ({
       <StyledLink href="/reset-password" variant="body2">
         Forgot your password?
       </StyledLink>
-      <SubmitButton text="Login" fullWidth />
+      <CustomButton type="submit" text="Login" fullWidth />
       <StyledLink onClick={toggleLoginMethod}>
         Do you want to login using OTP?
       </StyledLink>

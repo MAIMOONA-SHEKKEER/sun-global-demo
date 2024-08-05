@@ -68,7 +68,6 @@ export const useResetPasswordForm = () => {
   };
 
   const handleResetPassword = async () => {
-    console.log("handleResetPassword called");
     if (!validateOtp(credentials.otp, setOtpError)) {
       setSnackbar({
         open: true,
@@ -79,7 +78,7 @@ export const useResetPasswordForm = () => {
       setLoading(false);
       return;
     }
-  
+
     setLoading(true);
     try {
       const resetResponse = await resetPassword({
@@ -87,7 +86,7 @@ export const useResetPasswordForm = () => {
         newPassword: credentials.newPassword,
         otp: credentials.otp,
       });
-  
+
       if (resetResponse && resetResponse.successful) {
         if (resetResponse.payload.success) {
           setSnackbar({
@@ -127,7 +126,7 @@ export const useResetPasswordForm = () => {
       setLoading(false);
     }
   };
-  
+
   const handleSnackbarClose = () =>
     setSnackbar((prev) => ({ ...prev, open: false }));
 

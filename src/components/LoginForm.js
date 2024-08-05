@@ -1,16 +1,14 @@
 import React from "react";
 import { Grid, Box, Divider, Chip } from "@mui/material";
-import {
-  CustomText,
-  CustomSnackbar,
-  StyledGrid,
-  StyledLink,
-  StyledAvatar,
-} from "../styles/StyledComponents";
 import Banner from "./Banner";
 import EmailPasswordLogin from "./EmailPasswordLogin";
 import EmailOtpLogin from "./EmailOtpLogin";
 import { useLoginForm } from "../hooks/useLoginForm";
+import StyledGrid from "../styles/components/StyledGrid";
+import { CustomText } from "../styles/components/CustomText";
+import StyledLink from "../styles/components/StyledLink";
+import CustomSnackbar from "../styles/components/CustomSnackbar";
+import StyledAvatar from "../styles/components/StyledAvatar";
 
 const LoginForm = () => {
   const {

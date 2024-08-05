@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Box } from "@mui/material";
-import { CustomTextField, StyledLink } from "../styles/StyledComponents";
 import { OtpForm } from "./OtpForm";
+import StyledLink from "../styles/components/StyledLink";
+import CustomTextField from "../styles/components/CustomTextField";
 
 const EmailOtpLogin = ({
   credentials,

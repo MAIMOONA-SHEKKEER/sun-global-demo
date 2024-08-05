@@ -1,8 +1,8 @@
 import { Divider, Grid } from "@mui/material";
 import React from "react";
-import { CustomText } from "../styles/StyledComponents";
 import theme from "../styles/Theme";
 import { userData } from "../constants/userData";
+import { CustomText } from "../styles/components/CustomText";
 
 const PersonalInfo = ({ userFields }) => {
   return (
