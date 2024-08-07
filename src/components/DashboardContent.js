@@ -33,7 +33,7 @@ const DashboardContent = ({ drawerWidth, handleLogout }) => {
                     src={userData.profileImage}
                   />
                 ) : (
-                  <StyledAvatar sx={{ width: 80, height: 80 }}>
+                  <StyledAvatar sx={{ width: 50, height: 50 }}>
                     {userData.name[0]}
                   </StyledAvatar>
                 )}
