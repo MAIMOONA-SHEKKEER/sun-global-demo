@@ -1,4 +1,6 @@
+import { endpoints } from "../api";
 import { sendOtp } from "../api/auth";
+import axiosInstance from "../api/axiosInstance";
 import { verifyOtp } from "../api/user";
 import { fieldMapping } from "../constants/registerData";
 
@@ -81,7 +83,6 @@ export const handleVerifyOtp = async (
           message: response.payload.message || "OTP verified successfully!",
           severity: "success",
         });
-        localStorage.setItem('authToken', 'login-through-otp');
         navigate(route);
       } else {
         setSnackbar({
@@ -114,4 +115,70 @@ export const validateOtp = (otp, setOtpError) => {
   }
   setOtpError("");
   return true;
+};
+
+export const checkAuth = async (setSnackbar, navigate) => {
+  try {
+    const token = getToken();
+    const response = await axiosInstance.post(
+      endpoints.verifyToken,
+      {},
+      {
+        withCredentials: true,
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    const { successful, payload } = response.data;
+
+    if (successful) {
+      if (payload.successful) {
+        return { auth: true };
+      } else {
+        const { notValidReason } = payload.payload;
+        navigate("/feedback", {
+          state: {
+            type: "error",
+            message: `Authentication failed: ${notValidReason}`,
+          },
+        });
+        return { auth: false };
+      }
+    } else {
+      navigate("/feedback", {
+        state: {
+          type: "error",
+          message: `Authentication failed: ${payload.message}`,
+        },
+      });
+      return { auth: false };
+    }
+  } catch (error) {
+    console.log("err", error);
+    navigate("/feedback", {
+      state: {
+        type: "error",
+        message: "Error verifying token. Please try again.",
+      },
+    });
+    return { auth: false };
+  }
+};
+
+export const getToken = () => {
+  const name = "authToken=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      const token = c.substring(name.length, c.length);
+      return token;
+    }
+  }
+  return "";
 };

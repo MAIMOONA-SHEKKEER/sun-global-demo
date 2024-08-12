@@ -5,6 +5,7 @@ import LoginForm from './components/LoginForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './api/privateRoute'; 
+import FeedbackComponent from './components/Feedback';
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegistrationForm />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
+        <Route path="/feedback" element={<FeedbackComponent />} />
         <Route path="/dashboard" element={
           <PrivateRoute>
             <Dashboard />

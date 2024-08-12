@@ -9,4 +9,3 @@ export const createUser = async (userDetails) => {
   }
 };
 
-// Add other user-related service functions here

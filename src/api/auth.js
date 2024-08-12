@@ -15,9 +15,7 @@ export const loginUser = async (loginMethod, credentials) => {
     const response = await api.post(endpoints.login, payload);
     const token = response.data.payload.token;
 
-    if (token) {
-      localStorage.setItem("authToken", token);
-    }
+    document.cookie = `authToken=${token}; path=/; secure; samesite=strict;`;
 
     return response.data;
   } catch (error) {
@@ -52,7 +50,7 @@ export const resetPassword = async ({ email, newPassword, otp }) => {
 
 export const verifyToken = async () => {
   try {
-    const response = await api.get(endpoints.verifyToken); 
+    const response = await api.get(endpoints.verifyToken);
     return response.data;
   } catch (error) {
     handleApiError(error);

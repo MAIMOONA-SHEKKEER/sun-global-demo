@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { registerUser } from "../api/user";
-import { validateEmail, validateMobile, validatePassword } from "../utils/validators";
+import {
+  validateEmail,
+  validateMobile,
+  validatePassword,
+} from "../utils/validators";
 import { fieldMapping } from "../constants/registerData";
 import { generateSnackbarMessage } from "../utils/authUtils";
+import { useNavigate } from "react-router-dom";
 
 const useRegistrationForm = (initialState) => {
   const [formData, setFormData] = useState({
@@ -19,10 +24,12 @@ const useRegistrationForm = (initialState) => {
   const [errors, setErrors] = useState({});
   const [snackbar, setSnackbar] = useState({
     open: false,
-    message: '',
-    severity: 'success',
+    message: "",
+    severity: "success",
   });
   const [loading, setLoading] = useState(false);
+  
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,14 +49,16 @@ const useRegistrationForm = (initialState) => {
   const validate = () => {
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
-      if (key === 'email' && !validateEmail(formData[key])) {
+      if (key === "email" && !validateEmail(formData[key])) {
         newErrors[key] = "Invalid email address";
-      } else if (key === 'password' && !validatePassword(formData[key])) {
+      } else if (key === "password" && !validatePassword(formData[key])) {
         newErrors[key] = "Password must be at least 6 characters long";
-      } else if (key === 'mobile' && !validateMobile(formData[key])) {
+      } else if (key === "mobile" && !validateMobile(formData[key])) {
         newErrors[key] = "Mobile number must be between 10 to 15 digits";
       } else if (!formData[key]) {
-        newErrors[key] = `${fieldMapping[key] || key.replace(/([A-Z])/g, " $1")} is required`;
+        newErrors[key] = `${
+          fieldMapping[key] || key.replace(/([A-Z])/g, " $1")
+        } is required`;
       }
     });
     return newErrors;
@@ -72,22 +81,28 @@ const useRegistrationForm = (initialState) => {
       if (response.successful) {
         setSnackbar({
           open: true,
-          message: 'Registration successful!',
-          severity: 'success',
+          message: "Registration successful!",
+          severity: "success",
+        });
+        navigate("/feedback", {
+          state: {
+            type: "success",
+            message: "Registration successful!",
+          },
         });
       } else {
         const errorMessage = generateSnackbarMessage(response);
         setSnackbar({
           open: true,
           message: errorMessage,
-          severity: 'error',
+          severity: "error",
         });
       }
     } catch (error) {
       setSnackbar({
         open: true,
-        message: 'Registration failed. Please try again.',
-        severity: 'error',
+        message: "Registration failed. Please try again.",
+        severity: "error",
       });
     } finally {
       setLoading(false);
@@ -98,7 +113,6 @@ const useRegistrationForm = (initialState) => {
     setSnackbar(false);
   };
 
-
   return {
     formData,
     errors,
@@ -106,7 +120,8 @@ const useRegistrationForm = (initialState) => {
     handleChange,
     handleSubmit,
     handleSnackbarClose,
-    handleRoleChange,loading
+    handleRoleChange,
+    loading,
   };
 };
 

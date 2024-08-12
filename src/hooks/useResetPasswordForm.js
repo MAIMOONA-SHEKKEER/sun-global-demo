@@ -94,7 +94,12 @@ export const useResetPasswordForm = () => {
             message: "Password reset successfully.",
             severity: "success",
           });
-          navigate("/login");
+          navigate("/feedback", {
+            state: {
+              type: "success",
+              message: "Password reset successfully!",
+            },
+          });
         } else {
           setSnackbar({
             open: true,

@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { OtpForm } from "./OtpForm";
 import StyledLink from "../styles/components/StyledLink";
 import CustomTextField from "../styles/components/CustomTextField";
+import CustomButton from "../styles/components/CustomButton";
 
 const EmailOtpLogin = ({
   credentials,
@@ -16,10 +17,9 @@ const EmailOtpLogin = ({
   errors,
   toggleLoginMethod,
   setErrors,
-  showResendOtpButton, 
-  onResendOtpClick, 
+  showResendOtpButton,
+  onResendOtpClick,
 }) => {
-  
   const validateEmail = () => {
     let valid = true;
     let newErrors = {};
@@ -57,15 +57,14 @@ const EmailOtpLogin = ({
             error={!!errors.email}
             helperText={errors.email}
           />
-          <Button
+          <CustomButton
             onClick={handleSendOtpClick}
-            variant="contained"
             sx={{ m: 1 }}
+            text={loading ? "Sending..." : "Send OTP"}
             fullWidth
-            disabled={loading}
-          >
-            {loading ? "Sending..." : "Send OTP"}
-          </Button>
+            disabled={credentials.email.trim() === "" || loading}
+          />
+
           <StyledLink onClick={toggleLoginMethod} mt={2}>
             Go back to login with Email & Password
           </StyledLink>

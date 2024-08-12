@@ -55,7 +55,7 @@ const ResetPasswordForm = () => {
                 helperText={errors.email}
                 sx={{ marginBottom: 2 }}
               />
-              <CustomButton
+              <CustomButton fullWidth
                 onClick={handleSendOtp}
                 disabled={credentials.email.trim() === "" || loading}
                 text={loading ? <CircularProgress size={24} /> : "Send OTP"}
