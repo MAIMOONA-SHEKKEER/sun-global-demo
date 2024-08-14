@@ -151,11 +151,10 @@ export const checkAuth = async (setSnackbar, navigate) => {
       return { auth: false };
     }
   } catch (error) {
-    console.log("err", error);
     navigate("/feedback", {
       state: {
         type: "error",
-        message: "Error verifying token. Please try again.",
+        message: "No authentication token found. Please log in again.",
       },
     });
     return { auth: false };
