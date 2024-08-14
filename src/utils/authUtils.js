@@ -2,9 +2,13 @@ import { endpoints } from "../api";
 import { sendOtp } from "../api/auth";
 import axiosInstance from "../api/axiosInstance";
 import { verifyOtp } from "../api/user";
+import { messagesMapping } from "../constants/messageMapping";
 import { fieldMapping } from "../constants/registerData";
 
 export const generateSnackbarMessage = (response) => {
+  if (!response || !response.payload) {
+    return "An unknown error occurred";
+  }
   if (response.message === "REQUEST_BODY_VALIDATION_ERROR") {
     const fieldsWithErrors = Object.keys(response.payload).map(
       (field) =>
@@ -12,27 +16,17 @@ export const generateSnackbarMessage = (response) => {
         field.replace(/Field --> /, "").replace(/([A-Z])/g, " $1")
     );
     const uniqueFields = [...new Set(fieldsWithErrors)];
-    return `Please Check ${uniqueFields.join(", ")}`;
+    return `Please check ${uniqueFields.join(", ")}`;
   }
 
-  if (response.payload.includes("Email address is not verified"))
-    return "Email address is not verified";
-  if (response.payload.includes("Invalid credentials provided"))
-    return "Invalid Credentials Provided";
-  if (response.payload.includes("Invalid ID")) return "Invalid ID number";
-  if (response.payload.includes("already exists"))
-    return "Email address already exists";
-  if (response.payload.includes("OTP has not expired"))
-    return "Previously requested OTP has not expired yet";
-  if (response.payload.includes("Missing final '@domaind"))
-    return "Please verify email address";
-  if (response.payload.includes("Provided Otp is redeemed already"))
-    return "Provided Otp is already redeemed";
-  if (response.payload.includes("could not execute statement"))
-    return "There was a problem with your request. Please check your input.";
-  return null;
-};
+  const payload = response.payload || "";
 
+  for (const [key, value] of Object.entries(messagesMapping)) {
+    if (payload.includes(key)) return value;
+  }
+
+  return "An error occurred. Please try again.";
+};
 export const handleSendOtp = async (
   email,
   setSnackbar,
@@ -83,7 +77,9 @@ export const handleVerifyOtp = async (
           message: response.payload.message || "OTP verified successfully!",
           severity: "success",
         });
-        navigate(route);
+        setTimeout(() => {
+          navigate(route);
+        }, 2000);
       } else {
         setSnackbar({
           open: true,
@@ -102,7 +98,7 @@ export const handleVerifyOtp = async (
   } catch (error) {
     setSnackbar({
       open: true,
-      message: "OTP verification failed. Please try again.",
+      message: "No authentication token found. Please log in again.",
       severity: "error",
     });
   }

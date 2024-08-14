@@ -76,7 +76,9 @@ export const useLoginForm = () => {
           message: "Login Successful",
           severity: "success",
         });
-        navigate("/dashboard");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
       } else {
         const errorMessage = generateSnackbarMessage(response);
         setSnackbar({

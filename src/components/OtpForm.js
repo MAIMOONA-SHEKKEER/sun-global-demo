@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Card, CircularProgress} from "@mui/material";
+import { Box, Card, CircularProgress } from "@mui/material";
 import OtpInput from "react18-input-otp";
 import theme from "../styles/Theme";
 import { CustomText } from "../styles/components/CustomText";
